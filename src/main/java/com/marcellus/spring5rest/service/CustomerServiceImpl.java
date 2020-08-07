@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 @Service
 public class CustomerServiceImpl implements CustomerService{
 
+    public static final String BASE_URL = "/api/v1/customers/";
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
@@ -50,18 +51,40 @@ public class CustomerServiceImpl implements CustomerService{
         return  saveAndReturn(customer);
     }
 
+    @Override
+    public CustomerDTO patchCustomer(Long id, CustomerDTO customerDTO) {
+        return customerRepository.findById(id).map(customer -> {
+            if(customerDTO.getFirstName() != null) {
+                customer.setFirstName(customerDTO.getFirstName());
+            }
+            if(customerDTO.getLastName()!= null) {
+                customer.setLastName(customerDTO.getLastName());
+            }
+            CustomerDTO returnDTO = customerMapper.customerToCustomerDTO(customerRepository.save(customer));
+
+            returnDTO.setCustomer_url(BASE_URL + id);
+
+            return returnDTO;
+        }).orElseThrow(RuntimeException::new);
+    }
+
+    @Override
+    public void deleteCustomerById(Long id) {
+        customerRepository.deleteById(id);
+    }
+
     private CustomerDTO saveAndReturn(Customer customer) {
 
         Customer savedCustomer = customerRepository.save(customer);
         CustomerDTO returnDTO = customerMapper.customerToCustomerDTO(savedCustomer);
-        returnDTO.setCustomer_url("/api/v1/customers/" + savedCustomer.getId());
+        returnDTO.setCustomer_url(BASE_URL + savedCustomer.getId());
 
         return returnDTO;
     }
 
     private CustomerDTO mapCustomer(Customer customer) {
         CustomerDTO customerDTO = customerMapper.customerToCustomerDTO(customer);
-        customerDTO.setCustomer_url("/api/v1/customers/" + customer.getId());
+        customerDTO.setCustomer_url(BASE_URL + customer.getId());
         return customerDTO;
     }
 }
