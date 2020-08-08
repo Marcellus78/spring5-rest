@@ -33,6 +33,9 @@ public class CategoryServiceImpl implements CategoryService {
              CategoryDTO categoryDTO =  categoryMapper
                      .categoryToCategoryDTO(categoryRepository.findByName(name));
 
+             if (categoryDTO == null) {
+                 throw new ResourceNotFoundException();
+             }
              return categoryDTO;
     }
 }
