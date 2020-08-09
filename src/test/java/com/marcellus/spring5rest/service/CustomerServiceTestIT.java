@@ -6,6 +6,7 @@ import com.marcellus.spring5rest.bootstrap.Bootstrap;
 import com.marcellus.spring5rest.domain.Customer;
 import com.marcellus.spring5rest.repositories.CategoryRepository;
 import com.marcellus.spring5rest.repositories.CustomerRepository;
+import com.marcellus.spring5rest.repositories.VendorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class CustomerServiceTestIT {
     @Autowired
     CategoryRepository categoryRepository;
 
+    @Autowired
+    VendorRepository vendorRepository;
+
     CustomerService customerService;
 
     @BeforeEach
@@ -36,7 +40,7 @@ public class CustomerServiceTestIT {
         System.out.println(categoryRepository.findAll().size());
 
         //setup data for testing
-        Bootstrap bootstrap = new Bootstrap(categoryRepository, customerRepository);
+        Bootstrap bootstrap = new Bootstrap(categoryRepository, customerRepository, vendorRepository);
         bootstrap.run();
 
         customerService = new CustomerServiceImpl(customerRepository, CustomerMapper.INSTANCE);
@@ -90,7 +94,6 @@ public class CustomerServiceTestIT {
 
 
     }
-
 
     private Long getCustomerId() {
         List<Customer> customerList = customerRepository.findAll();
